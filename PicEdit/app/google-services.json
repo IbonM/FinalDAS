@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "469981432320",
+    "firebase_url": "https://segunda-entrega-montoya.firebaseio.com",
+    "project_id": "segunda-entrega-montoya",
+    "storage_bucket": "segunda-entrega-montoya.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:469981432320:android:545f9a3aff93b4bab8e6e5",
+        "android_client_info": {
+          "package_name": "com.montoya.segundaentregamontoya"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "469981432320-s9foj7ud82f35d7ekro21dpd6nlasvgd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.montoya.segundaentregamontoya",
+            "certificate_hash": "8f0a01a6b6e7fa91a497fd1423e642a501bee1f9"
+          }
+        },
+        {
+          "client_id": "469981432320-rgi6g0hsrjbet1bhu7lkr8p3hnicha01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFBQkidbHQ8WuQw-5MkjoikEza7wvuYIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "469981432320-rgi6g0hsrjbet1bhu7lkr8p3hnicha01.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
