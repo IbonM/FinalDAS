@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:469981432320:android:545f9a3aff93b4bab8e6e5",
         "android_client_info": {
-          "package_name": "com.montoya.segundaentregamontoya"
+          "package_name": "com.montoya.picedit"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "469981432320-s9foj7ud82f35d7ekro21dpd6nlasvgd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.montoya.segundaentregamontoya",
+            "package_name": "com.montoya.picedit",
             "certificate_hash": "8f0a01a6b6e7fa91a497fd1423e642a501bee1f9"
           }
         },

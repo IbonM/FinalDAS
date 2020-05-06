@@ -34,7 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
 
         // Obtenemos el usuario actual y revisamos si estamos logeados
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+        //if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+          if (FirebaseAuth.getInstance().getCurrentUser() == null) {
 
             // Llenamos los parametros de Firebase Auth para poder iniciar sesión con google y correo
             List<AuthUI.IdpConfig> providers = Arrays.asList(

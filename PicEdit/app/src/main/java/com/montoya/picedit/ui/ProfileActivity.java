@@ -2,10 +2,20 @@ package com.montoya.picedit.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -23,6 +33,8 @@ import com.montoya.picedit.databinding.ActivityProfileBinding;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.util.Locale;
+
 
 /**
  * Actividad para visualizar la información del perfil de usuario actual
@@ -36,6 +48,8 @@ public class ProfileActivity extends AppCompatActivity {
     // Variables de la ui
     private ImageView profilePic;
     private ProgressBar progressBar;
+    NotificationManager elManager;
+    NotificationCompat.Builder elBuilder;
 
     /**
      * Método OnCreate dónde inicializaremos las variables de la UI y obtendremos la información del usuario
@@ -64,6 +78,8 @@ public class ProfileActivity extends AppCompatActivity {
             TextView name = binding.userName;
             TextView mail = binding.mail;
             TextView signOut = binding.logout;
+            ImageButton bEsp = binding.bEsp;
+            ImageButton bEng = binding.bEng;
 
             name.setText(user.getDisplayName());
             mail.setText(user.getEmail());
@@ -104,6 +120,46 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             });
 
+            //Boton ESP (Cambiar idioma a espanol)
+            bEsp.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    elBuilder.setSmallIcon(android.R.drawable.stat_sys_warning)
+                            .setContentTitle("Idioma cambiado")
+                            .setContentText("La aplicacion se muestra ahora en castellano")
+                            .setSubText("");
+                    elManager.notify(1, elBuilder.build());
+                    language("es");
+                }
+            });
+            //Boton ENG (Cambiar idioma a ingles)
+            bEng.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    elBuilder.setSmallIcon(android.R.drawable.stat_sys_warning)
+                            .setContentTitle("Language changed")
+                            .setContentText("App is now shown in english")
+                            .setSubText("");
+                    elManager.notify(1, elBuilder.build());
+                    language("en");
+                }
+            });
+            //Sistema de notificaciones
+            elManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            elBuilder= new NotificationCompat.Builder(this, "ChannelID");
+            if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.O) {
+                NotificationChannel elCanal= new NotificationChannel("ChannelID", "ChannelName", NotificationManager.IMPORTANCE_DEFAULT);
+                elBuilder.setSmallIcon(android.R.drawable.stat_sys_warning)
+                        .setVibrate(new long[]{0, 1000, 500, 1000})
+                        .setAutoCancel(true);
+                elCanal.setDescription("Channel Description");
+                elCanal.enableLights(true);
+                elCanal.setLightColor(Color.RED);
+                elCanal.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+                elCanal.enableVibration(true);
+                elManager.createNotificationChannel(elCanal);
+            }
+
             // Ponemos un listener el el label de sign out para cerrar sesión
             signOut.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -135,6 +191,17 @@ public class ProfileActivity extends AppCompatActivity {
                 .setAspectRatio(1,1)
                 .setFixAspectRatio(true)
                 .start(this);
+    }
+
+    //Cambiar idioma de la aplicacion
+    private void language(String lang){
+        Resources res = getResources();
+        Configuration con = res.getConfiguration();
+        con.setLocale(new Locale(lang));
+        res.updateConfiguration(con,res.getDisplayMetrics());
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
     }
 
     /**

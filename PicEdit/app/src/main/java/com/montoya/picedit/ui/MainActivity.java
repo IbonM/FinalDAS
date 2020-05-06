@@ -3,15 +3,22 @@ package com.montoya.picedit.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -44,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private String userId;
     FirebaseFirestore db;
 
+    private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
+    static final int CODIGO_FOTO = 1;
+
     // Variables de User Interface
     ProgressBar progressBar;
 
@@ -64,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
             ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
             View view = binding.getRoot();
             setContentView(view);
+            Button bPhoto = binding.bPhoto;
+            Button bVideo = binding.bVideo;
+            Button bUpload = binding.bUpload;
 
             // Obtenemos instancia de base de datos
             db = FirebaseFirestore.getInstance();
@@ -72,7 +85,30 @@ public class MainActivity extends AppCompatActivity {
             progressBar = binding.progressBar2;
 
             progressBar.setVisibility(View.GONE);
+            //Boton Camara
+            bPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
+                    //takePicture();
+
+                }
+
+            });
+            bVideo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+            bUpload.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+
+                }
+
+            });
 
         // Sino estamos logeados nos salimos
         } else {
@@ -128,5 +164,49 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         return super.onOptionsItemSelected(item);
+    }
+    //Metodo que se encarga de pedir permisos de camara y llamar a una app de fotografia
+    protected void takePicture() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST_CAMERA);
+                takePicture();
+            }
+        } else {
+            Intent elIntentFoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (elIntentFoto.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(elIntentFoto, CODIGO_FOTO);
+            }
+        }
+    }
+
+    //Al sacar la foto, si el codigo de respuesta es correcto, se recortará la foto con forma cuadrada y se trabajara con ella
+    //En este momento la unica funcion implementada para la foto es mostrarla para comprobar que hasta ahi funciona correctamente
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CODIGO_FOTO && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap cropImg;
+            Bitmap laminiatura = (Bitmap) extras.get("data");
+            if (laminiatura.getHeight() > laminiatura.getWidth()) {
+                cropImg = Bitmap.createBitmap(laminiatura, 0, (laminiatura.getHeight() - laminiatura.getWidth()) / 2, laminiatura.getWidth(), laminiatura.getWidth());
+            } else if (laminiatura.getHeight() < laminiatura.getWidth()) {
+                cropImg = Bitmap.createBitmap(laminiatura, (laminiatura.getWidth() - laminiatura.getHeight()) / 2, 0, laminiatura.getHeight(), laminiatura.getHeight());
+            } else {
+                cropImg = laminiatura;
+            }
+            //elImageView.setImageBitmap(cropImg);
+        }
+
     }
 }

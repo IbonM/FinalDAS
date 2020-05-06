@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">PicEdit</string>
     <string name="logout">Logout</string>
-    <string name="profile">Perfil </string>
-    <string name="help">Ayuda</string>
+    <string name="profile">Profile </string>
+    <string name="help">Help</string>
+    <string name="name">Name:</string>
+    <string name="change_profile_pic">Change Profile Picture</string>
+    <string name="contact">Contact:</string>
+    <string name="camera">Camera</string>
+    <string name="video">Video</string>
+    <string name="upload">Upload</string>
 </resources>

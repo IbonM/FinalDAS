@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">PicEdit</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="profile">Perfil </string>
+    <string name="help">Ayuda</string>
+    <string name="name">Nombre:</string>
+    <string name="change_profile_pic">Cambiar foto de perfil</string>
+    <string name="contact">Contacto:</string>
+    <string name="camera">Cámara</string>
+    <string name="video">Vídeo</string>
+    <string name="upload">Subir</string>
+</resources>
