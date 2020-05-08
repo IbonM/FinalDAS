@@ -9,4 +9,9 @@
     <string name="camera">Cámara</string>
     <string name="video">Vídeo</string>
     <string name="upload">Subir</string>
+    <string name="cut">Recortar</string>
+    <string name="filters">Filtros</string>
+    <string name="rotate">Rotar</string>
+    <string name="exit">Salir</string>
+    <string name="save">Guardar</string>
 </resources>

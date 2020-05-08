@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             bVideo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    edit();
                 }
             });
             bUpload.setOnClickListener(new View.OnClickListener() {
@@ -165,6 +165,13 @@ public class MainActivity extends AppCompatActivity {
             }
         return super.onOptionsItemSelected(item);
     }
+
+    public void edit() {
+        // Si da click en la opción perfil abrimos la actividad de perfil
+        Intent intent = new Intent(this, EditActivity.class);
+        startActivity(intent);
+    }
+
     //Metodo que se encarga de pedir permisos de camara y llamar a una app de fotografia
     protected void takePicture() {
         if (ContextCompat.checkSelfPermission(this,
