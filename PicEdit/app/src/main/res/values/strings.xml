@@ -14,4 +14,15 @@
     <string name="rotate">Rotate</string>
     <string name="exit">Exit</string>
     <string name="save">Save</string>
+    <string name="gallery">Gallery</string>
+    <string name="edit">Edit</string>
+    <string name="share">Share</string>
+    <string name="cameradeny">You need to grant camera permissions to do this</string>
+    <string name="editdeny">You need to grant file permissions to edit</string>
+    <string name="uploaderror">Error uploading the picture</string>
+    <string name="resulterror">Error loading the picture</string>
+    <string name="instructions">How to use</string>
+    <string name="takepic">1. Take a picture</string>
+    <string name="edit_it">\n\n2. Edit it as you like</string>
+    <string name="share_it">\n\n3. Share it with your friends!</string>
 </resources>

@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -77,15 +78,19 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView profilePic;
 
-    private final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
+    private final int MY_PERMISSIONS_REQUEST_CAMERA = 2;
+    private final int MY_PERMISSIONS_REQUEST_VIDEO = 4;
     static final int CODIGO_FOTO = 1;
+    private static int VIDEO_REQUEST = 101;
 
     // Variables de User Interface
     ProgressBar progressBar;
     private EasyImage easyImage;
     private Uri uri;
+    private Uri videoUri;
     private Button bEditar;
     private Button bShare;
+    private int type=0;
 
     /**
      * Método OnCreate dónde obtenremos el usuario logeado, iniciaremos nuestros objetos de la ui y cargaremos los TODOs
@@ -93,13 +98,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.CAMERA
                 }, 1);
             }
         }
@@ -115,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
             View view = binding.getRoot();
             setContentView(view);
             Button bPhoto = binding.bPhoto;
+            Button bVideo = binding.bVideo;
             bEditar = binding.bEditar;
             bShare = binding.bUpload;
             Button bGaleria = binding.bGaleria;
@@ -124,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
             uri = getIntent().getParcelableExtra("uriImage");
 
-            if (uri != null) {
+            //if (uri != null) {
                 try {
                     File fileFolder = new File(Environment.getExternalStorageDirectory() + "/PicEdit/");
                     File file = new File(fileFolder, "temporal.png");
@@ -140,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-            }
+            //}
 
             // Obtenemos instancia de base de datos
             db = FirebaseFirestore.getInstance();
@@ -157,39 +163,70 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             });
+
+            bVideo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    captureVideo();
+                }
+
+            });
+
             bGaleria.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     CropImage.activity()
                             .setGuidelines(CropImageView.Guidelines.ON)
-                            .setAspectRatio(1,1)
-                            .setFixAspectRatio(true)
+                            //.setAspectRatio(1,1)
+                            //.setFixAspectRatio(true)
                             .start(MainActivity.this);
                 }
             });
             bEditar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    edit();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                            }, 3);
+                        } else {
+                            edit();
+                        }
+                    }
                 }
             });
             bShare.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent share = new Intent(Intent.ACTION_SEND);
-                    share.setType("image/png");
-                    share.putExtra(Intent.EXTRA_STREAM, uri);
+                    if(type==0) { //COMPARTIR FOTOGRAFÍA
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        share.setType("image/png");
+                        share.putExtra(Intent.EXTRA_STREAM, uri);
 
-                    File fileFolder = new File(Environment.getExternalStorageDirectory() + "/PicEdit/");
-                    File file = new File(fileFolder, "temporal.png");
-                    Uri apkURI = FileProvider.getUriForFile(
-                            MainActivity.this,
-                            MainActivity.this.getApplicationContext()
-                                    .getPackageName() + ".provider", file);
-                    share.setDataAndType(apkURI, "image/png");
-                    share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        File fileFolder = new File(Environment.getExternalStorageDirectory() + "/PicEdit/");
+                        File file = new File(fileFolder, "temporal.png");
+                        Uri apkURI = FileProvider.getUriForFile(
+                                MainActivity.this,
+                                MainActivity.this.getApplicationContext()
+                                        .getPackageName() + ".provider", file);
+                        share.setDataAndType(apkURI, "image/png");
+                        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                    startActivity(Intent.createChooser(share, "Share Image"));
+                        startActivity(Intent.createChooser(share, "Share Image"));
+                    }else{ //COMPARTIR VIDEO
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        share.setType("video/mp4");
+                        share.putExtra(Intent.EXTRA_STREAM, videoUri);
+                        try{
+                            startActivity(Intent.createChooser(share,"Share Video"));
+                        }catch (android.content.ActivityNotFoundException ex){
+
+                        }
+                    }
                 }
             });
 
@@ -230,18 +267,23 @@ public class MainActivity extends AppCompatActivity {
 
         // Si da click en la opción perfil abrimos la actividad de perfil
         if (id == R.id.action_profile) {
+
             Intent intent = new Intent(this, ProfileActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
+
+            finish();
+
             return true;
 
         // Si da click en ayuda desplegamos las instrucciones
         } else
             if (id == R.id.action_help) {
                 new AlertDialog.Builder(this)
-                        .setTitle("Instrucciones")
-                        .setMessage("1. Selecciona una imágen" +
-                                "\n\n2. Agrega algún filtro" +
-                                "\n\n3. Compartela con tus amigos!")
+                        .setTitle(R.string.instructions)
+                        .setMessage(getString(R.string.takepic) +
+                                getString(R.string.edit_it) +
+                                getString(R.string.share_it))
                         .setPositiveButton(android.R.string.yes, null).show();
 
                 return true;
@@ -254,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EditActivity.class);
         intent.putExtra("uriImageEdit", uri);
         startActivity(intent);
+        finish();
 
     }
 
@@ -270,63 +313,133 @@ public class MainActivity extends AppCompatActivity {
                     .allowMultiple(true)
                     .build();
             easyImage.openCameraForImage(MainActivity.this);
+
         }
     }
+
+    protected void captureVideo(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_VIDEO);
+
+        } else {
+            Intent videoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+            if (videoIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(videoIntent, VIDEO_REQUEST);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_CAMERA)
+        {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                takePicture();
+            }
+            else
+            {
+                Toast.makeText(this, R.string.cameradeny, Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (requestCode == 3)
+        {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                edit();
+            }
+            else
+            {
+                Toast.makeText(this, R.string.editdeny, Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (requestCode == MY_PERMISSIONS_REQUEST_VIDEO)
+        {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                captureVideo();
+            }
+            else
+            {
+                Toast.makeText(this, R.string.cameradeny, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
 
     //Al sacar la foto, si el codigo de respuesta es correcto, se recortará la foto con forma cuadrada y se trabajara con ella
     //En este momento la unica funcion implementada para la foto es mostrarla para comprobar que hasta ahi funciona correctamente
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // Revisamos que sea nuestra petición con id CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+        //Revisamos si es la petición de video
+        if(requestCode==VIDEO_REQUEST && resultCode==RESULT_OK){
+            videoUri= data.getData();
+            Glide.with(MainActivity.this)
+                    .load(videoUri)
+                    .into(profilePic);
 
-            // Obtenemos el resultado
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            type=1;
+            bEditar.setVisibility(View.GONE);
+            bShare.setVisibility(View.VISIBLE);
 
-            // Verificamos que el resultado sea correcto
-            if (resultCode == RESULT_OK) {
+        }else {
+            // Revisamos que sea nuestra petición con id CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE
+            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 
-                // obtenemos el uri de la foto
-                final Uri resultUri = result.getUri();
+                // Obtenemos el resultado
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
 
-                uri = resultUri;
+                // Verificamos que el resultado sea correcto
+                if (resultCode == RESULT_OK) {
 
-                // En caso de que se guarde exitosamente la cargamos
-                Glide.with(MainActivity.this)
-                        .load(resultUri)
-                        .into(profilePic);
+                    // obtenemos el uri de la foto
+                    final Uri resultUri = result.getUri();
 
-                bEditar.setVisibility(View.VISIBLE);
-                bShare.setVisibility(View.VISIBLE);
-            }
-        } else {
-            easyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
-                @Override
-                public void onMediaFilesPicked(MediaFile[] imageFiles, MediaSource source) {
-                    uri = Uri.parse(imageFiles[0].getFile().toURI().toString());
+                    uri = resultUri;
 
                     // En caso de que se guarde exitosamente la cargamos
                     Glide.with(MainActivity.this)
-                            .load(uri)
+                            .load(resultUri)
                             .into(profilePic);
 
                     bEditar.setVisibility(View.VISIBLE);
+                    type=0;
                     bShare.setVisibility(View.VISIBLE);
                 }
+            } else {
+                easyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+                    @Override
+                    public void onMediaFilesPicked(MediaFile[] imageFiles, MediaSource source) {
+                        uri = Uri.parse(imageFiles[0].getFile().toURI().toString());
 
-                @Override
-                public void onImagePickerError(@NonNull Throwable error, @NonNull MediaSource source) {
-                    //Some error handling
-                    error.printStackTrace();
-                }
+                        // En caso de que se guarde exitosamente la cargamos
+                        Glide.with(MainActivity.this)
+                                .load(uri)
+                                .into(profilePic);
 
-                @Override
-                public void onCanceled(@NonNull MediaSource source) {
-                    //Not necessary to remove any files manually anymore
-                }
-            });
+                        bEditar.setVisibility(View.VISIBLE);
+                        type=0;
+                        bShare.setVisibility(View.VISIBLE);
+                    }
 
+                    @Override
+                    public void onImagePickerError(@NonNull Throwable error, @NonNull MediaSource source) {
+                        //Some error handling
+                        error.printStackTrace();
+                    }
+
+                    @Override
+                    public void onCanceled(@NonNull MediaSource source) {
+                        //Not necessary to remove any files manually anymore
+                    }
+                });
+
+            }
         }
     }
 }

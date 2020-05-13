@@ -65,12 +65,14 @@ public class EditActivity extends AppCompatActivity {
 
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                pic.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             final Bitmap original = bitmap;
         } else {
             bitmap = ((BitmapDrawable)pic.getDrawable()).getBitmap();
+            pic.setImageBitmap(bitmap);
         }
         if (savedInstanceState!=null){
             Uri savedUri = savedInstanceState.getParcelable("imageUri");
@@ -84,9 +86,8 @@ public class EditActivity extends AppCompatActivity {
         bRotate.setContentDescription("0");
         bCut.setContentDescription("0");
 
-        Log.i("AAAAA", "String");
+        pic.setImageBitmap(original);
 
-        Log.i("AAAAA", "String");
 
 
 
@@ -289,6 +290,7 @@ public class EditActivity extends AppCompatActivity {
         bSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                         Uri uri = saveImageToInternalStorage(((BitmapDrawable)pic.getDrawable()).getBitmap(), "temporal.png");
@@ -363,11 +365,4 @@ public class EditActivity extends AppCompatActivity {
         // Return the saved image Uri
         return Uri.parse(file.getAbsolutePath());
     }
-    //Mostrar mensaje mediante Toast
-    /*private void toast(String msg){
-
-        Toast aviso = Toast.makeText(this,msg,Toast.LENGTH_SHORT);
-        aviso.setGravity(Gravity.TOP| Gravity.CENTER, 0, 10);
-        aviso.show();
-    }*/
 }

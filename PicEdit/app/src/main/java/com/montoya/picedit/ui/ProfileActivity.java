@@ -29,6 +29,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.montoya.picedit.R;
 import com.montoya.picedit.databinding.ActivityProfileBinding;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -124,7 +125,7 @@ public class ProfileActivity extends AppCompatActivity {
             bEsp.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    elBuilder.setSmallIcon(android.R.drawable.stat_sys_warning)
+                    elBuilder.setSmallIcon(R.drawable.smalllogo)
                             .setContentTitle("Idioma cambiado")
                             .setContentText("La aplicacion se muestra ahora en castellano")
                             .setSubText("");
@@ -136,7 +137,7 @@ public class ProfileActivity extends AppCompatActivity {
             bEng.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    elBuilder.setSmallIcon(android.R.drawable.stat_sys_warning)
+                    elBuilder.setSmallIcon(R.drawable.smalllogo)
                             .setContentTitle("Language changed")
                             .setContentText("App is now shown in english")
                             .setSubText("");
@@ -257,7 +258,7 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         // Mostramos al usuario el error
-                        Toast.makeText(ProfileActivity.this, "Error al subir foto", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ProfileActivity.this, R.string.uploaderror, Toast.LENGTH_LONG).show();
 
                         // Quitamos el progressbar
                         progressBar.setVisibility(View.GONE);
@@ -266,7 +267,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             // En caso de error mostramos al usuario el error
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Toast.makeText(this, "Error al recuperar foto", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.resulterror, Toast.LENGTH_LONG).show();
             }
         }
     }

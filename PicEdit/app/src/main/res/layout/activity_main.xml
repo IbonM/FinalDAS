@@ -9,12 +9,15 @@
 
     <Button
         android:id="@+id/bEditar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
-        android:text="Editar"
+        android:layout_width="112dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="76dp"
+        android:backgroundTint="#BA2481F2"
+        android:text="@string/edit"
+        android:textSize="15sp"
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/bUpload"
+        app:layout_constraintHorizontal_bias="0.527"
         app:layout_constraintStart_toEndOf="@+id/bPhoto"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -56,28 +59,43 @@
         android:id="@+id/bPhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
+        android:layout_marginStart="25dp"
         android:layout_marginTop="30dp"
+        android:backgroundTint="#A35BC9F4"
         android:text="@string/camera"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/bGaleria"
+        android:id="@+id/bVideo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Galería"
-        app:layout_constraintStart_toStartOf="@+id/bPhoto"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="3dp"
+        android:backgroundTint="#A35BC9F4"
+        android:text="@string/video"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bPhoto" />
 
     <Button
-        android:id="@+id/bUpload"
+        android:id="@+id/bGaleria"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
-        android:layout_marginEnd="28dp"
-        android:text="Compartir"
+        android:layout_marginTop="3dp"
+        android:backgroundTint="#A35BC9F4"
+        android:text="@string/gallery"
+        app:layout_constraintStart_toStartOf="@+id/bPhoto"
+        app:layout_constraintTop_toBottomOf="@+id/bVideo" />
+
+    <Button
+        android:id="@+id/bUpload"
+        android:layout_width="112dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="76dp"
+        android:layout_marginEnd="15dp"
+        android:backgroundTint="#BA2481F2"
+        android:text="@string/share"
+        android:textSize="15sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -87,12 +105,15 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="32dp"
-        android:scaleType="centerInside"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.489"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bEditar"
+        app:layout_constraintTop_toBottomOf="@+id/bGaleria"
+        app:layout_constraintVertical_bias="0.139"
         app:srcCompat="@drawable/applogo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

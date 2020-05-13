@@ -14,4 +14,15 @@
     <string name="rotate">Rotar</string>
     <string name="exit">Salir</string>
     <string name="save">Guardar</string>
+    <string name="gallery">Galería</string>
+    <string name="edit">Editar</string>
+    <string name="share">Compartir</string>
+    <string name="cameradeny">Necesitas dar permisos de cámara para hacer esto</string>
+    <string name="editdeny">Necesitas dar permisos de archivos para editar</string>
+    <string name="uploaderror">Error al subir la foto</string>
+    <string name="resulterror">Error al recuperar la foto</string>
+    <string name="instructions">Instrucciones</string>
+    <string name="takepic">1. Selecciona una imágen</string>
+    <string name="edit_it">\n\n2. Agrega algún filtro</string>
+    <string name="share_it">\n\n3. Compartela con tus amigos!</string>
 </resources>
