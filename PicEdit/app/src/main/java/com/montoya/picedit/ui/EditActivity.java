@@ -59,11 +59,10 @@ public class EditActivity extends AppCompatActivity {
 
         Bitmap bitmap = null;
         if (uri != null) {
-            Glide.with(EditActivity.this)
-                    .load(uri)
-                    .into(pic);
-
-            try {
+            try{
+                Glide.with(EditActivity.this)
+                        .load(MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri))
+                        .into(pic);
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
                 pic.setImageBitmap(bitmap);
             } catch (IOException e) {
@@ -284,7 +283,15 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 pic.setImageBitmap(original);
-                finish();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                        Uri uri = saveImageToInternalStorage(((BitmapDrawable)pic.getDrawable()).getBitmap(), "temporal.png");
+                        Intent intent = new Intent(EditActivity.this, MainActivity.class);
+                        intent.putExtra("uriImage", uri);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
             }
         });
         bSave.setOnClickListener(new View.OnClickListener() {

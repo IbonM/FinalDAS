@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 }, 1);
             }
         }
-
+        Log.i("AAAAAA","0");
         // Para estar aquí tenemos que estar logeados, sino nos salimos de la actividad
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -295,8 +295,9 @@ public class MainActivity extends AppCompatActivity {
         // Si da click en la opción perfil abrimos la actividad de perfil
         Intent intent = new Intent(this, EditActivity.class);
         intent.putExtra("uriImageEdit", uri);
+
         startActivity(intent);
-        finish();
+
 
     }
 
