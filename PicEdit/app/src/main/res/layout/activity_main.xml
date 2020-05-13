@@ -7,6 +7,17 @@
     tools:context=".ui.MainActivity">
 
 
+    <Button
+        android:id="@+id/bEditar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:text="Editar"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/bUpload"
+        app:layout_constraintStart_toEndOf="@+id/bPhoto"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
@@ -24,14 +35,12 @@
         android:id="@+id/todos"
         android:layout_width="397dp"
         android:layout_height="401dp"
-        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/cardView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.571"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.519" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ProgressBar
         android:id="@+id/progressBar2"
@@ -39,29 +48,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/todos"
-        app:layout_constraintEnd_toEndOf="@+id/todos"
-        app:layout_constraintStart_toStartOf="@+id/todos"
-        app:layout_constraintTop_toTopOf="@+id/todos" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/bPhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="30dp"
         android:text="@string/camera"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/bVideo"
+        android:id="@+id/bGaleria"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
-        android:text="@string/video"
-        app:layout_constraintEnd_toStartOf="@+id/bUpload"
-        app:layout_constraintStart_toEndOf="@+id/bPhoto"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="8dp"
+        android:text="Galería"
+        app:layout_constraintStart_toStartOf="@+id/bPhoto"
+        app:layout_constraintTop_toBottomOf="@+id/bPhoto" />
 
     <Button
         android:id="@+id/bUpload"
@@ -69,8 +77,22 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="56dp"
         android:layout_marginEnd="28dp"
-        android:text="@string/upload"
+        android:text="Compartir"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/profilePic"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bEditar"
+        app:srcCompat="@drawable/applogo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

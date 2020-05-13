@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "469981432320",
-    "firebase_url": "https://segunda-entrega-montoya.firebaseio.com",
-    "project_id": "segunda-entrega-montoya",
-    "storage_bucket": "segunda-entrega-montoya.appspot.com"
+    "project_number": "357525247619",
+    "firebase_url": "https://picedit-9f442.firebaseio.com",
+    "project_id": "picedit-9f442",
+    "storage_bucket": "picedit-9f442.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:469981432320:android:545f9a3aff93b4bab8e6e5",
+        "mobilesdk_app_id": "1:357525247619:android:fc5f95219b5dfdee9dedb6",
         "android_client_info": {
           "package_name": "com.montoya.picedit"
         }
       },
       "oauth_client": [
         {
-          "client_id": "469981432320-s9foj7ud82f35d7ekro21dpd6nlasvgd.apps.googleusercontent.com",
+          "client_id": "357525247619-3ce17jblsfjb18fhn730741m78it0aao.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.montoya.picedit",
@@ -23,20 +23,20 @@
           }
         },
         {
-          "client_id": "469981432320-rgi6g0hsrjbet1bhu7lkr8p3hnicha01.apps.googleusercontent.com",
+          "client_id": "357525247619-gn13vsac6tstg0md5jn7k3e6m0unnpho.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBFBQkidbHQ8WuQw-5MkjoikEza7wvuYIo"
+          "current_key": "AIzaSyBoAuR-uaeKcROSRgEpA9BbPKvzX8Alo6c"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "469981432320-rgi6g0hsrjbet1bhu7lkr8p3hnicha01.apps.googleusercontent.com",
+              "client_id": "357525247619-gn13vsac6tstg0md5jn7k3e6m0unnpho.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

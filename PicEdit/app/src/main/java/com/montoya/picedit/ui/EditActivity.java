@@ -1,5 +1,12 @@
 package com.montoya.picedit.ui;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
@@ -7,16 +14,32 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.montoya.picedit.databinding.ActivityEditBinding;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 public class EditActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +54,41 @@ public class EditActivity extends AppCompatActivity {
         final Button bExit = binding.bExit;
         final Button bSave = binding.bSave;
         final ImageView pic = binding.imageView2;
-        final Bitmap original = ((BitmapDrawable)pic.getDrawable()).getBitmap();
+
+        final Uri uri = getIntent().getParcelableExtra("uriImageEdit");
+
+        Bitmap bitmap = null;
+        if (uri != null) {
+            Glide.with(EditActivity.this)
+                    .load(uri)
+                    .into(pic);
+
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            final Bitmap original = bitmap;
+        } else {
+            bitmap = ((BitmapDrawable)pic.getDrawable()).getBitmap();
+        }
+        if (savedInstanceState!=null){
+            Uri savedUri = savedInstanceState.getParcelable("imageUri");
+            Glide.with(EditActivity.this)
+                    .load(savedUri)
+                    .into(pic);
+        }
+
+        final Bitmap original = bitmap;
         bFilter.setContentDescription("0");
         bRotate.setContentDescription("0");
         bCut.setContentDescription("0");
+
+        Log.i("AAAAA", "String");
+
+        Log.i("AAAAA", "String");
+
+
 
         //Boton para aplicar filtros a la foto
         bFilter.setOnClickListener(new View.OnClickListener() {
@@ -59,8 +113,34 @@ public class EditActivity extends AppCompatActivity {
 
                     bFilter.setContentDescription("1");
                 }
-                //Filtro rojo
+
+                //Filtro negativo
                 else if(bFilter.getContentDescription() == "1"){
+
+                    resetFilter(pic,original,bRotate.getContentDescription().toString(),bCut.getContentDescription());
+
+                    Bitmap foto = ((BitmapDrawable)pic.getDrawable()).getBitmap();
+                    Bitmap inversion = foto.copy(Bitmap.Config.ARGB_8888, true);
+                    int width = inversion.getWidth();
+                    int height = inversion.getHeight();
+                    int pixels = width * height;
+                    // Get original pixels
+                    int[] pixel = new int[pixels];
+                    inversion.getPixels(pixel, 0, width, 0, 0, width, height);
+                    int RGB_MASK = 0x00FFFFFF;
+                    // Modify pixels
+                    for (int i = 0; i < pixels; i++)
+                        pixel[i] ^= RGB_MASK;
+                    inversion.setPixels(pixel, 0, width, 0, 0, width, height);
+                    pic.setImageBitmap(inversion);
+
+                    bFilter.setContentDescription("2");
+
+
+                }
+
+                //Filtro rojo
+                else if(bFilter.getContentDescription() == "2"){
 
                     resetFilter(pic,original,bRotate.getContentDescription().toString(),bCut.getContentDescription());
 
@@ -86,11 +166,11 @@ public class EditActivity extends AppCompatActivity {
                     canvas.drawBitmap(foto, 0, 0, paint);
                     pic.setImageBitmap(fotoBin);
 
-                    bFilter.setContentDescription("2");
+                    bFilter.setContentDescription("3");
                 }
 
                 //Filtro amarillo
-                else if(bFilter.getContentDescription() == "2"){
+                else if(bFilter.getContentDescription() == "3"){
 
                     resetFilter(pic,original,bRotate.getContentDescription().toString(),bCut.getContentDescription());
 
@@ -116,11 +196,11 @@ public class EditActivity extends AppCompatActivity {
                     canvas.drawBitmap(foto, 0, 0, paint);
                     pic.setImageBitmap(fotoBin);
 
-                    bFilter.setContentDescription("3");
+                    bFilter.setContentDescription("4");
                 }
 
                 //Filtro azul
-                else if(bFilter.getContentDescription() == "3"){
+                else if(bFilter.getContentDescription() == "4"){
 
                     resetFilter(pic,original,bRotate.getContentDescription().toString(),bCut.getContentDescription());
 
@@ -146,7 +226,7 @@ public class EditActivity extends AppCompatActivity {
                     canvas.drawBitmap(foto, 0, 0, paint);
                     pic.setImageBitmap(fotoBin);
 
-                    bFilter.setContentDescription("4");
+                    bFilter.setContentDescription("5");
                 }
 
                 //Foto sin filtros
@@ -175,17 +255,20 @@ public class EditActivity extends AppCompatActivity {
 
                 Bitmap cropImg;
                 Bitmap foto = ((BitmapDrawable)pic.getDrawable()).getBitmap();
+
                 if(foto.getHeight()==foto.getWidth())
                 {
-
-                    cropImg = original;
-                    pic.setImageBitmap(cropImg);
-                    int times = Integer.parseInt(bRotate.getContentDescription().toString());
-                    rotate(pic,times);
-                    bCut.setContentDescription("0");
-                    for (int i=0;i<5;i++)
+                    if (original!=((BitmapDrawable)pic.getDrawable()).getBitmap())
                     {
-                        bFilter.callOnClick();
+                        cropImg = original;
+                        pic.setImageBitmap(cropImg);
+                        int times = Integer.parseInt(bRotate.getContentDescription().toString());
+                        rotate(pic,times);
+                        bCut.setContentDescription("0");
+                        for (int i=0;i<6;i++)
+                        {
+                            bFilter.callOnClick();
+                        }
                     }
                 }
                 else{
@@ -206,10 +289,23 @@ public class EditActivity extends AppCompatActivity {
         bSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                        Uri uri = saveImageToInternalStorage(((BitmapDrawable)pic.getDrawable()).getBitmap(), "temporal.png");
+                        Intent intent = new Intent(EditActivity.this, MainActivity.class);
+                        intent.putExtra("uriImage", uri);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+
 
             }
         });
     }
+
+
+
     //Rota la imagen 90 grados por numero recibido
     public void rotate(ImageView pic, int times){
         Bitmap rotImg;
@@ -242,4 +338,36 @@ public class EditActivity extends AppCompatActivity {
             cut(pic);
         }
     }
+
+
+
+    Uri saveImageToInternalStorage(Bitmap bitmap, String id) {
+        File file = new File(Environment.getExternalStorageDirectory() + "/PicEdit/");
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        file = new File(file, id);
+
+        try {
+            OutputStream stream = null;
+            stream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            stream.flush();
+            stream.close();
+
+        } catch (IOException e) // Catch the exception
+        {
+            e.printStackTrace();
+        }
+
+        // Return the saved image Uri
+        return Uri.parse(file.getAbsolutePath());
+    }
+    //Mostrar mensaje mediante Toast
+    /*private void toast(String msg){
+
+        Toast aviso = Toast.makeText(this,msg,Toast.LENGTH_SHORT);
+        aviso.setGravity(Gravity.TOP| Gravity.CENTER, 0, 10);
+        aviso.show();
+    }*/
 }
