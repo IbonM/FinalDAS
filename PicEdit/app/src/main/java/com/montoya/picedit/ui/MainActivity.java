@@ -6,17 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,35 +21,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.montoya.picedit.R;
 import com.montoya.picedit.databinding.ActivityMainBinding;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
@@ -75,15 +55,12 @@ public class MainActivity extends AppCompatActivity {
     // Definición de variables
     private String userId;
     FirebaseFirestore db;
-
     ImageView profilePic;
 
     private final int MY_PERMISSIONS_REQUEST_CAMERA = 2;
     private final int MY_PERMISSIONS_REQUEST_VIDEO = 4;
-    static final int CODIGO_FOTO = 1;
     private static int VIDEO_REQUEST = 101;
 
-    // Variables de User Interface
     ProgressBar progressBar;
     private EasyImage easyImage;
     private Uri uri;
@@ -93,11 +70,12 @@ public class MainActivity extends AppCompatActivity {
     private int type=0;
 
     /**
-     * Método OnCreate dónde obtenremos el usuario logeado, iniciaremos nuestros objetos de la ui y cargaremos los TODOs
+     * Método OnCreate dónde obtendremos el usuario logeado, iniciaremos nuestros objetos de la interfaz y tendremos los listener de los botones
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Empezamos pidiendo los permisos que usa la app. Si se deniegan se volveran a pedir cuando sean necesarios
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -108,30 +86,29 @@ public class MainActivity extends AppCompatActivity {
                 }, 1);
             }
         }
-        Log.i("AAAAAA","0");
-        // Para estar aquí tenemos que estar logeados, sino nos salimos de la actividad
+        // Para estar aquí tenemos que estar logeados, si no nos salimos de la actividad
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            // guardamos el id de usuario
+            // Guardamos el id de usuario
             userId = user.getUid();
 
             // Binding para hacer referencia de nuestros objetos del XML
             ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
             View view = binding.getRoot();
             setContentView(view);
+            // Inicializamos objetos de la interfaz
             Button bPhoto = binding.bPhoto;
             Button bVideo = binding.bVideo;
             bEditar = binding.bEditar;
             bShare = binding.bUpload;
             Button bGaleria = binding.bGaleria;
-
             profilePic = binding.profilePic;
-
+            progressBar = binding.progressBar2;
+            progressBar.setVisibility(View.GONE);
 
             uri = getIntent().getParcelableExtra("uriImage");
 
-            //if (uri != null) {
-                try {
+            try {
                     File fileFolder = new File(Environment.getExternalStorageDirectory() + "/PicEdit/");
                     File file = new File(fileFolder, "temporal.png");
                     uri = Uri.fromFile(file);
@@ -144,18 +121,12 @@ public class MainActivity extends AppCompatActivity {
                     bShare.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-
-            //}
+            }
 
             // Obtenemos instancia de base de datos
             db = FirebaseFirestore.getInstance();
 
-            // Inicializamos objetos de UI
-            progressBar = binding.progressBar2;
-
-            progressBar.setVisibility(View.GONE);
-            //Boton Camara
+            // Boton para sacar fotos
             bPhoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -163,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             });
-
+            // Boton para grabar videos
             bVideo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -171,18 +142,17 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             });
-
+            // Boton para acceder a la galeria
             bGaleria.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
                     CropImage.activity()
                             .setGuidelines(CropImageView.Guidelines.ON)
-                            //.setAspectRatio(1,1)
-                            //.setFixAspectRatio(true)
                             .start(MainActivity.this);
                 }
             });
+            // Boton para editar fotos
             bEditar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -199,10 +169,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+            // Boton para compartir fotos o videos
             bShare.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(type==0) { //COMPARTIR FOTOGRAFÍA
+                    if(type==0) { // COMPARTIR FOTO
                         Intent share = new Intent(Intent.ACTION_SEND);
                         share.setType("image/png");
                         share.putExtra(Intent.EXTRA_STREAM, uri);
@@ -217,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
                         share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                         startActivity(Intent.createChooser(share, "Share Image"));
-                    }else{ //COMPARTIR VIDEO
+                    }else{ // COMPARTIR VIDEO
                         Intent share = new Intent(Intent.ACTION_SEND);
                         share.setType("video/mp4");
                         share.putExtra(Intent.EXTRA_STREAM, videoUri);
@@ -230,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-        // Sino estamos logeados nos salimos
+        // Si no estamos logeados no podemos acceder a la actividad
         } else {
             finish();
         }
@@ -243,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // Para estar aquí tenemos que estar logeados, sino nos salimos de la actividad
+        // Para estar aquí tenemos que estar logeados, si no nos salimos de la actividad
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             finish();
         }
@@ -301,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //Metodo que se encarga de pedir permisos de camara y llamar a una app de fotografia
+    // Metodo que se encarga de pedir permisos de camara y llamar a una app de fotografia
     protected void takePicture() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
@@ -317,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
+    // Metodo que se encarga de pedir permisos de camara y llamar a una app de video
     protected void captureVideo(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
@@ -331,6 +302,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Metodo que inicia las actividades si se dan los permisos y avisa al usuario de que necesita dar permisos en caso contrario
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
@@ -372,12 +344,12 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    //Al sacar la foto, si el codigo de respuesta es correcto, se recortará la foto con forma cuadrada y se trabajara con ella
-    //En este momento la unica funcion implementada para la foto es mostrarla para comprobar que hasta ahi funciona correctamente
+    // Al sacar la foto o video comprueba si el codigo de respuesta es correcto, muestra una vista previa y activa
+    // los botones de editar y compartir si es una foto o solo el de compartir si es un video
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //Revisamos si es la petición de video
+        // Revisamos si es la petición de video
         if(requestCode==VIDEO_REQUEST && resultCode==RESULT_OK){
             videoUri= data.getData();
             Glide.with(MainActivity.this)
@@ -398,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
                 // Verificamos que el resultado sea correcto
                 if (resultCode == RESULT_OK) {
 
-                    // obtenemos el uri de la foto
+                    // Obtenemos el uri de la foto
                     final Uri resultUri = result.getUri();
 
                     uri = resultUri;

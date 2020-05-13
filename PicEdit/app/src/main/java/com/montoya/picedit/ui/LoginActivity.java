@@ -10,13 +10,14 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.montoya.picedit.R;
 import com.montoya.picedit.databinding.ActivityLoginBinding;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * Launcher Activity para implementar la lógica de inicio de sesión, registro y recuperar contraseña
- * Esta actividad usa Firebase auth para manejar toda la lógica y permite iniciar sesión con google o por correo
+ * Esta actividad usa Firebase auth para manejar toda la lógica y permite iniciar sesión con Google o por correo
  * Una vez el usuario se ha autenticado procedemos a abrir la Main Activity
  *
  * Toda la lógica de inicio de sesión se hace con ayuda de la librería FirebaseAuth, con ella guardamos en
@@ -34,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
 
         // Obtenemos el usuario actual y revisamos si estamos logeados
-        //if (FirebaseAuth.getInstance().getCurrentUser() == null) {
           if (FirebaseAuth.getInstance().getCurrentUser() == null) {
 
             // Llenamos los parametros de Firebase Auth para poder iniciar sesión con google y correo
@@ -50,15 +50,14 @@ public class LoginActivity extends AppCompatActivity {
                             .build(),
                     RC_SIGN_IN);
 
-        // Si ya estamos loggeados entonces cargamos el contenido principal
+        // Si ya estamos logeados entonces cargamos el contenido principal
         } else {
             goToMainActivity();
         }
     }
 
     /**
-     * Método OnCreate con los bindings para facilitar la conexión de objetos de la ui con el código
-     * En esta actividad no los usamos
+     * Método OnCreate con los bindings para facilitar la conexión de objetos de la interfaz con el código
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,9 +93,9 @@ public class LoginActivity extends AppCompatActivity {
                 // Vamos a la actividad principal
                 goToMainActivity();
 
-            // Si no se inició sesión correctamente mostramos un mensaje
+            // Si el inicio de sesion no ha sido correcto mostramos un mensaje
             } else {
-                Toast.makeText(this, "Error al iniciar sesión", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.loginerror, Toast.LENGTH_LONG).show();
             }
         }
     }

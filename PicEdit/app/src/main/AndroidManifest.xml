@@ -33,7 +33,6 @@
         <activity android:name=".ui.EditActivity"
             android:configChanges="screenLayout|orientation|screenSize"
             android:screenOrientation="locked"/>
-        <activity android:name=".ui.ShareActivity" />
         <activity android:name=".ui.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

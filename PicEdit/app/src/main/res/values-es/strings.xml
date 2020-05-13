@@ -25,4 +25,5 @@
     <string name="takepic">1. Selecciona una imágen</string>
     <string name="edit_it">\n\n2. Agrega algún filtro</string>
     <string name="share_it">\n\n3. Compartela con tus amigos!</string>
+    <string name="loginerror">Error al iniciar sesión</string>
 </resources>

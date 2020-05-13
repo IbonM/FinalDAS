@@ -46,7 +46,7 @@ import java.util.Locale;
  */
 public class ProfileActivity extends AppCompatActivity {
 
-    // Variables de la ui
+    // Variables de la interfaz
     private ImageView profilePic;
     private ProgressBar progressBar;
     NotificationManager elManager;
@@ -66,11 +66,11 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(view);
 
 
-        // Para estar aquí tenemos que estar logeados, sino nos salimos de la actividad
+        // Para estar aquí tenemos que estar logeados, si no nos salimos de la actividad
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
 
-            // Creamos todas las referencias del UI e inicializamos
+            // Creamos todas las referencias de la interfaz e inicializamos
             progressBar = binding.progressBar;
             progressBar.setVisibility(View.GONE);
 
@@ -88,12 +88,10 @@ public class ProfileActivity extends AppCompatActivity {
             // Obtenemos el uri de la foto de perfil guardada en firebase
             Uri profilePicUri = user.getPhotoUrl();
 
-            // Solamente si existe una foto de perfil vamos a cargarla desde el uri
+            // Si existe una foto de perfil vamos a cargarla desde el uri
             if (profilePicUri != null) {
                 String profilePicUrl = profilePicUri.toString();
 
-                // Por default firebase nos da una foto de perfil muy chiquita asi que si es así cambiamos
-                // el url para obtener una más grande
                 if (profilePicUrl.contains("s96-c")) {
                     profilePicUrl = profilePicUrl.replace("s96-c", "s400-c");
                 }
@@ -105,7 +103,7 @@ public class ProfileActivity extends AppCompatActivity {
                         .into(profilePic);
             }
 
-            // Ponemos un listener en el rofilepic para cambiar la foto de perfil
+            // Listener en la foto para cambiar la foto de perfil
             profilePic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -113,7 +111,7 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             });
 
-            // Ponemos un listener en el label de cambiar foto para cambiar la foto de perfil
+            // Listener en el texto de cambiar foto para cambiar la foto de perfil
             changeProfilePic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -121,7 +119,7 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             });
 
-            //Boton ESP (Cambiar idioma a espanol)
+            // Boton bandera española (Cambiar idioma a espanol)
             bEsp.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
@@ -133,7 +131,7 @@ public class ProfileActivity extends AppCompatActivity {
                     language("es");
                 }
             });
-            //Boton ENG (Cambiar idioma a ingles)
+            // Boton bandera inglesa (Cambiar idioma a ingles)
             bEng.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
@@ -145,7 +143,7 @@ public class ProfileActivity extends AppCompatActivity {
                     language("en");
                 }
             });
-            //Sistema de notificaciones
+            // Sistema de notificaciones
             elManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             elBuilder= new NotificationCompat.Builder(this, "ChannelID");
             if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.O) {
@@ -161,7 +159,7 @@ public class ProfileActivity extends AppCompatActivity {
                 elManager.createNotificationChannel(elCanal);
             }
 
-            // Ponemos un listener el el label de sign out para cerrar sesión
+            // Ponemos un listener en el texto de sign out para cerrar sesión
             signOut.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -171,8 +169,6 @@ public class ProfileActivity extends AppCompatActivity {
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     // Cerramos Profile Activity para regresar a LoginActivity
-                                    // Primero pasamos por MainActivity pero en el onResume checa que no esta
-                                    // logueado y se regresa a Login
                                     finish();
                                 }
                             });
@@ -182,7 +178,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * Usamos la librería CircleCrop para iniciar una nueva actividad que nos dejará escojer entre
+     * Usamos la librería CircleCrop para iniciar una nueva actividad que nos dejará escoger entre
      * sacar una foto con la cámara y obtenerla de la galería. Ademas le pedimos proporciones de una
      * foto cuadrada con aspect ratio 1:1 que es lo que necesitamos para la foto de perfil.
      */
@@ -194,7 +190,7 @@ public class ProfileActivity extends AppCompatActivity {
                 .start(this);
     }
 
-    //Cambiar idioma de la aplicacion
+    // Cambiar idioma de la aplicacion
     private void language(String lang){
         Resources res = getResources();
         Configuration con = res.getConfiguration();
@@ -222,7 +218,7 @@ public class ProfileActivity extends AppCompatActivity {
             // Verificamos que el resultado sea correcto
             if (resultCode == RESULT_OK) {
 
-                // Mostramos el progressbar
+                // Mostramos barra de carga
                 progressBar.setVisibility(View.VISIBLE);
 
                 // obtenemos el uri de la foto
@@ -232,7 +228,7 @@ public class ProfileActivity extends AppCompatActivity {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 assert user != null;
 
-                //Generamos la peticion de cambio de foto
+                // Generamos la peticion de cambio de foto
                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                         .setPhotoUri(resultUri)
                         .build();
@@ -243,13 +239,13 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
 
-                        // En caso de que se giarde exitosamente la cargamos
+                        // En caso de que se guarde exitosamente la cargamos
                         Glide.with(ProfileActivity.this)
                                 .load(resultUri)
                                 .circleCrop()
                                 .into(profilePic);
 
-                        // Quitamos el progressbar
+                        // Quitamos la barra de carga
                         progressBar.setVisibility(View.GONE);
                     }
                 })

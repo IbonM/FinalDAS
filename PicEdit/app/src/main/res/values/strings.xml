@@ -25,4 +25,5 @@
     <string name="takepic">1. Take a picture</string>
     <string name="edit_it">\n\n2. Edit it as you like</string>
     <string name="share_it">\n\n3. Share it with your friends!</string>
+    <string name="loginerror">Error logging in</string>
 </resources>

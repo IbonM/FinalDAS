@@ -1,12 +1,8 @@
 package com.montoya.picedit.ui;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
@@ -19,20 +15,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.montoya.picedit.databinding.ActivityEditBinding;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,19 +35,23 @@ public class EditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        // Binding para hacer referencia de nuestros objetos del XML
         ActivityEditBinding binding = ActivityEditBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        // Inicializamos objetos de la interfaz
         final Button bFilter = binding.bFilter;
         final Button bRotate = binding.bRotate;
         final Button bCut = binding.bCut;
         final Button bExit = binding.bExit;
         final Button bSave = binding.bSave;
         final ImageView pic = binding.imageView2;
+        bFilter.setContentDescription("0");
+        bRotate.setContentDescription("0");
+        bCut.setContentDescription("0");
 
         final Uri uri = getIntent().getParcelableExtra("uriImageEdit");
-
+        // Cargamos la foto
         Bitmap bitmap = null;
         if (uri != null) {
             try{
@@ -64,37 +59,19 @@ public class EditActivity extends AppCompatActivity {
                         .load(MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri))
                         .into(pic);
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-                pic.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            final Bitmap original = bitmap;
         } else {
             bitmap = ((BitmapDrawable)pic.getDrawable()).getBitmap();
-            pic.setImageBitmap(bitmap);
         }
-        if (savedInstanceState!=null){
-            Uri savedUri = savedInstanceState.getParcelable("imageUri");
-            Glide.with(EditActivity.this)
-                    .load(savedUri)
-                    .into(pic);
-        }
-
         final Bitmap original = bitmap;
-        bFilter.setContentDescription("0");
-        bRotate.setContentDescription("0");
-        bCut.setContentDescription("0");
 
-        pic.setImageBitmap(original);
-
-
-
-
-        //Boton para aplicar filtros a la foto
+        // Boton para aplicar filtros a la foto
         bFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Filtro blanco y negro
+                // Filtro blanco y negro
                 if (bFilter.getContentDescription() == "0"){
 
                     Bitmap foto = ((BitmapDrawable)pic.getDrawable()).getBitmap();
@@ -114,7 +91,7 @@ public class EditActivity extends AppCompatActivity {
                     bFilter.setContentDescription("1");
                 }
 
-                //Filtro negativo
+                // Filtro negativo
                 else if(bFilter.getContentDescription() == "1"){
 
                     resetFilter(pic,original,bRotate.getContentDescription().toString(),bCut.getContentDescription());
@@ -139,7 +116,7 @@ public class EditActivity extends AppCompatActivity {
 
                 }
 
-                //Filtro rojo
+                // Filtro rojo
                 else if(bFilter.getContentDescription() == "2"){
 
                     resetFilter(pic,original,bRotate.getContentDescription().toString(),bCut.getContentDescription());
@@ -169,7 +146,7 @@ public class EditActivity extends AppCompatActivity {
                     bFilter.setContentDescription("3");
                 }
 
-                //Filtro amarillo
+                // Filtro amarillo
                 else if(bFilter.getContentDescription() == "3"){
 
                     resetFilter(pic,original,bRotate.getContentDescription().toString(),bCut.getContentDescription());
@@ -199,7 +176,7 @@ public class EditActivity extends AppCompatActivity {
                     bFilter.setContentDescription("4");
                 }
 
-                //Filtro azul
+                // Filtro azul
                 else if(bFilter.getContentDescription() == "4"){
 
                     resetFilter(pic,original,bRotate.getContentDescription().toString(),bCut.getContentDescription());
@@ -229,7 +206,7 @@ public class EditActivity extends AppCompatActivity {
                     bFilter.setContentDescription("5");
                 }
 
-                //Foto sin filtros
+                // Foto sin filtros
                 else{
 
                     resetFilter(pic,original,bRotate.getContentDescription().toString(),bCut.getContentDescription());
@@ -238,7 +215,7 @@ public class EditActivity extends AppCompatActivity {
                 }
             }
         });
-        //Boton para rotar la imagen 90 grados
+        // Boton para rotar la imagen 90 grados
         bRotate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -248,7 +225,7 @@ public class EditActivity extends AppCompatActivity {
                 bRotate.setContentDescription(String.valueOf((num + 1)%4));
             }
         });
-        //Boton para recortar la imagen a un cuadrado o deshacer el corte
+        // Boton para recortar la imagen a un cuadrado o deshacer el corte
         bCut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -278,7 +255,7 @@ public class EditActivity extends AppCompatActivity {
 
             }
         });
-        //Boton de vuelta a la actividad principal sin guardar
+        // Boton de vuelta a la actividad principal sin guardar
         bExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -294,6 +271,7 @@ public class EditActivity extends AppCompatActivity {
                 }
             }
         });
+        // Boton para guardar la imagen y volver a la actividad principal
         bSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -315,7 +293,7 @@ public class EditActivity extends AppCompatActivity {
 
 
 
-    //Rota la imagen 90 grados por numero recibido
+    // Rota la imagen 90 grados por numero recibido
     public void rotate(ImageView pic, int times){
         Bitmap rotImg;
         Bitmap foto = ((BitmapDrawable)pic.getDrawable()).getBitmap();
@@ -324,7 +302,7 @@ public class EditActivity extends AppCompatActivity {
         rotImg = Bitmap.createBitmap(foto, 0, 0, foto.getWidth(), foto.getHeight(), matrix, true);
         pic.setImageBitmap(rotImg);
     }
-    //Corta la imagen en un cuadrado
+    // Corta la imagen en un cuadrado
     public void cut(ImageView pic) {
         Bitmap cropImg;
         Bitmap foto = ((BitmapDrawable)pic.getDrawable()).getBitmap();
@@ -336,7 +314,7 @@ public class EditActivity extends AppCompatActivity {
             pic.setImageBitmap(cropImg);
         }
     }
-    //Devuelve la imagen al filtro original manteniendo rotacion y corte
+    // Devuelve la imagen al filtro original manteniendo rotacion y corte
     public void resetFilter(ImageView pic, Bitmap original,String rotate, CharSequence cut)
     {
         pic.setImageBitmap(original);
@@ -349,7 +327,7 @@ public class EditActivity extends AppCompatActivity {
     }
 
 
-
+    //Guarda la imagen en la memoria
     Uri saveImageToInternalStorage(Bitmap bitmap, String id) {
         File file = new File(Environment.getExternalStorageDirectory() + "/PicEdit/");
         if (!file.exists()) {
