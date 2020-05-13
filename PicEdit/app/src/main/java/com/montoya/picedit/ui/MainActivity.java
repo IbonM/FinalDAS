@@ -268,6 +268,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("uriImageEdit", uri);
 
         startActivity(intent);
+        finish();
 
 
     }
